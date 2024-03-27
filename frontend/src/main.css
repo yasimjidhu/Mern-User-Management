@@ -1,0 +1,14 @@
+.nav {
+  background-color: #167d7f;
+}
+.signup-input {
+  border-color: #167d7f;
+}
+.login-btn {
+  background-color: #167d7f;
+  border-radius: 5px;
+  padding: 5px;
+  color: white;
+  font-size: large;
+  font-weight: 400;
+}
