@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { resetPassword } from "../../slices/PasswordResetSlice";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const ResetPasswordModal = ({ isOpen, onClose, onSubmit }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const { loading, error, success } = useSelector(
     (state) => state.resetPassword
   );
@@ -29,6 +31,8 @@ const ResetPasswordModal = ({ isOpen, onClose, onSubmit }) => {
       const res = await dispatch(resetPassword(formData));
       onClose();
       toast.success("Password reset successfully");
+      navigate('/login')
+
     } catch (err) {
       toast.error("Failed to reset password", err);
     }
@@ -106,8 +110,6 @@ const ResetPasswordModal = ({ isOpen, onClose, onSubmit }) => {
                 >
                   {loading ? "Resetting" : "Reset"}
                 </button>
-                {error && <div>Error:{error}</div>}
-                {success && <div>password reset successfully</div>}
                 <button
                   type="button"
                   className="cancel-btn text-white bg-violet-950"

@@ -52,6 +52,7 @@ const Signup = () => {
     dispatch(signupUser(formData))
       .then((res) => {
         //redirect the user to the home page after successful signup
+        toast.success('registration successfull')
         console.log("signup success", res);
         if (res.payload.email) {
           navigate("/");

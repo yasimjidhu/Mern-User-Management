@@ -4,38 +4,24 @@ import generateToken from "../utils/generateToken.js"
 import jwt from 'jsonwebtoken'
 import jwtTokenDecoder from "../utils/decodeToken.js"
 import bcrypt from 'bcryptjs'
+import { isValidElement } from "react"
 
 
 
 const authUser = asyncHandler(async (req, res) => {
-    try {
-        const { email, password } = req.body;
 
-        const user = await Users.findOne({ email });
+    const { email, password } = req.body
 
-        if (!user) {
-            console.log('no user found');
-            return res.status(401).json({ error: 'Invalid email or password' });
-        }
-        console.log('user',user)
-        console.log('password from the login',password)
+    const user = await Users.findOne({ email: email })
 
-        const isPasswordMatch = await user.matchPasswords(password);
-
-        if (isPasswordMatch) {
-            console.log('password matched');
-            generateToken(res, user._id);
-            return res.status(200).json(user);
-        } else {
-            console.log('password does not match');
-            return res.status(401).json({ error: 'Invalid email or password' });
-        }
-    } catch (error) {
-        console.error('Authentication error:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+    if (user && (await user.matchPasswords(password))) {
+        generateToken(res, user._id)
+        res.status(201).json(user);
+    } else {
+        return res.status(401).json({ error: 'invalid email or password' })
     }
-});
 
+})
 
 
 const registerUser = asyncHandler(async (req, res) => {
@@ -76,7 +62,9 @@ const fetchUserData = async (req, res) => {
 
         const userId = jwtTokenDecoder(token)
 
+        console.log('decoded under reached', userId)
         const user = await Users.findById(userId)
+        console.log('this is the user', user)
 
         if (!user) {
             return res.status(404).json({ error: 'user not found' })
@@ -161,7 +149,7 @@ const uploadFile = async (req, res) => {
 
         await userExist.save()
 
-   
+        console.log('file uploaded brooo')
         res.status(200).json({ message: 'file uploaded successfully', userExist })
 
     } catch (error) {
@@ -171,50 +159,58 @@ const uploadFile = async (req, res) => {
 }
 
 const resetPassword = async (req, res) => {
-
     try {
-        const token = req.cookies.jwt || req.headers.authorization
-        console.log('body', req.body)
+        const token = req.cookies.jwt;
+        const { currentPassword, newPassword } = req.body;
+        console.log('req.body',req.body)
 
-        const { currentPassword, newPassword } = req.body
-
-        if(currentPassword === newPassword){
-            console.log('old and new password are correct')
-            return res.status(401).json({error:'try new new password'})
+        // Check if the current password and new password are the same
+        if (currentPassword === newPassword) {
+            return res.status(400).json({ error: 'Please choose a new password' });
         }
 
-
+        // Verify the token
         if (!token) {
-            return res.status(401).json({ error: 'unauthorized , no token found' })
+            console.log('no token',token)
+            return res.status(401).json({ error: 'Unauthorized, no token found' });
         }
 
-        const userId = jwtTokenDecoder(token)
+        // Decode the token to get the user's ID
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decodedToken.userId;
 
-        const user = await Users.findById(userId)
+        // Find the user by ID
+        const user = await Users.findById(userId);
         if (!user) {
-            return res.status(404).json({ error: 'user not found' })
+            return res.status(404).json({ error: 'User not found' });
         }
 
-        const isMatch = await bcrypt.compare(currentPassword, user.password)
+        console.log('current password',currentPassword)
+        console.log('NEW password',user.password)
+        // Check if the current password matches the user's password
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        console.log('ismatch',isMatch)
         if (!isMatch) {
-            return res.status(400).json({ error: 'current password is incorrect' })
+            console.log('password not match')
+            return res.status(400).json({ error: 'Current password is incorrect' });
         }
 
-        // hash the new password
-        const salt = await bcrypt.genSalt(10)
-        const hashedPassword = await bcrypt.hash(newPassword, salt)
+        // Hash the new password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-        // update the user's password in the database
-        user.password = hashedPassword
-        await user.save()
-        console.log('password reset successfullly')
+        // Update the user's password in the database
+        await Users.findOneAndUpdate(
+            { _id: userId },
+            { $set: { password: hashedPassword } }
+        );
 
-        res.status(200).json({ message: 'password reset successfully' })
+        console.log('password reset success')
 
-
+        return res.status(200).json({ message: 'Password reset successfully' });
     } catch (error) {
-        console.error(error.message)
-        res.status(500).json({ error: 'internal server error' })
+        console.error(error.message);
+        return res.status(500).json({ error: 'Internal server error' });
     }
 }
 
@@ -227,6 +223,6 @@ export {
     updateUserProfile,
     uploadFile,
     fetchUserData,
-    resetPassword
+    resetPassword   
 
 }
