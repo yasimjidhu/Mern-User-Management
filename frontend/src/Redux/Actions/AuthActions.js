@@ -1,6 +1,5 @@
 import axios from "axios";
 import { SIGNUP_SUCCESS,SIGNUP_FAIL } from "./Types";
-import { json } from "react-router-dom";
 
 //SIGNUP ACTION
 export const signup = ({userName,email,password})=> async (dispatch)=>{

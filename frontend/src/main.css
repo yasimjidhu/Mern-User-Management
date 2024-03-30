@@ -1,6 +1,11 @@
-.nav {
-  background-color: #167d7f;
+body{
+  background-color: white;
 }
+
+.nav {
+  background-color: #030637;
+}
+
 .signup-input {
   border-color: #167d7f;
 }
@@ -11,4 +16,120 @@
   color: white;
   font-size: large;
   font-weight: 400;
+}
+.upload-btn {
+  background-color: #030637;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-upload-label {
+  display: inline-block;
+  padding: 7px 8px;
+  background-color: crimson;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.file-upload-label:hover {
+  background-color: crimson;
+}
+.maindiv {
+  background: linear-gradient(to right, #3c0753, #910a67);
+  box-shadow: -10px 10px 12px rgb(3, 6, 55);
+}
+
+.first-div {
+  background-color: #3c0753;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  width: 320px;
+}
+
+.modal-content {
+  max-width: 400px;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 20px;
+  color: #555;
+}
+
+h2 {
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.reset-input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  /* border: 1px solid #ccc; */
+  border-radius: 5px;
+  background-color: #b8b8b8;
+}
+
+button {
+  /* background-color: #007bff; */
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Existing styles remain the same */
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+}
+
+.submit-btn {
+  width: 48%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #167d7f;
+}
+
+.cancel-btn {
+  width: 48%;
+  padding: 10px;
+  font-weight: bold;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #167d7f;
 }

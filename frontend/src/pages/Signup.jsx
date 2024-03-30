@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Signup = () => {
   const [userName, setUserName] = useState("");
@@ -28,7 +29,7 @@ const Signup = () => {
                     fontSize: "18px",
                     fontFamily: "sans-serif",
                   }}
-                  onChange={handleChange}
+             
                 />
               </div>
               <div className="mb-4">
@@ -45,7 +46,7 @@ const Signup = () => {
                     fontSize: "18px",
                     fontFamily: "sans-serif",
                   }}
-                  onChange={handlePassChange}
+             
                 />
               </div>
               <button className="login-btn">Login</button>

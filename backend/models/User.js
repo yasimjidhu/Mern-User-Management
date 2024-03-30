@@ -15,6 +15,13 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    role: {
+        type: String,
+    },
+    profile: {
+        type: String,
+        default: "null.jpg"
     }
 });
 
@@ -33,6 +40,8 @@ userSchema.pre('save', async function (next) {
 });
 
 userSchema.methods.matchPasswords = async function (enteredPassword) {
+    console.log('user hashed password',enteredPassword)
+    console.log('user hashed password in db',this.password)
     return await bcrypt.compare(enteredPassword, this.password)
 }
 
