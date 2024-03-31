@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser'
 import userRouter from './routes/userRouter.js'
 import { notFound, errorHandler } from './middlewares/errorMiddleware.js';
 import cors from 'cors'
+import adminRouter from './routes/adminRoutes.js';
 
 
 
@@ -19,6 +20,7 @@ app.use(cors({ origin: "http://localhost:3000", credentials: true }))
 app.use('/',express.static('public'))
 
 app.use('/api/users', userRouter)
+app.use('/api/admin',adminRouter)
 
 app.use(notFound)
 app.use(errorHandler)

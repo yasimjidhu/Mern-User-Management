@@ -4,7 +4,6 @@ import generateToken from "../utils/generateToken.js"
 import jwt from 'jsonwebtoken'
 import jwtTokenDecoder from "../utils/decodeToken.js"
 import bcrypt from 'bcryptjs'
-import { isValidElement } from "react"
 
 
 
@@ -30,7 +29,6 @@ const registerUser = asyncHandler(async (req, res) => {
     const userExist = await Users.findOne({ email: email })
     if (userExist) {
         return res.status(400).json({ error: 'user already exist' })
-        // throw new Error('user already exist')
     }
 
     const newUser = await Users.create({
@@ -62,9 +60,7 @@ const fetchUserData = async (req, res) => {
 
         const userId = jwtTokenDecoder(token)
 
-        console.log('decoded under reached', userId)
         const user = await Users.findById(userId)
-        console.log('this is the user', user)
 
         if (!user) {
             return res.status(404).json({ error: 'user not found' })
@@ -149,7 +145,6 @@ const uploadFile = async (req, res) => {
 
         await userExist.save()
 
-        console.log('file uploaded brooo')
         res.status(200).json({ message: 'file uploaded successfully', userExist })
 
     } catch (error) {
@@ -162,7 +157,6 @@ const resetPassword = async (req, res) => {
     try {
         const token = req.cookies.jwt;
         const { currentPassword, newPassword } = req.body;
-        console.log('req.body',req.body)
 
         // Check if the current password and new password are the same
         if (currentPassword === newPassword) {
@@ -171,7 +165,6 @@ const resetPassword = async (req, res) => {
 
         // Verify the token
         if (!token) {
-            console.log('no token',token)
             return res.status(401).json({ error: 'Unauthorized, no token found' });
         }
 
@@ -185,13 +178,9 @@ const resetPassword = async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        console.log('current password',currentPassword)
-        console.log('NEW password',user.password)
-        // Check if the current password matches the user's password
+
         const isMatch = await bcrypt.compare(currentPassword, user.password);
-        console.log('ismatch',isMatch)
         if (!isMatch) {
-            console.log('password not match')
             return res.status(400).json({ error: 'Current password is incorrect' });
         }
 
@@ -205,8 +194,6 @@ const resetPassword = async (req, res) => {
             { $set: { password: hashedPassword } }
         );
 
-        console.log('password reset success')
-
         return res.status(200).json({ message: 'Password reset successfully' });
     } catch (error) {
         console.error(error.message);
@@ -214,6 +201,47 @@ const resetPassword = async (req, res) => {
     }
 }
 
+// route to update the username
+const updateUserData = async (req, res) => {
+    try {
+        const token = req.cookies.jwt || req.headers.authorization
+        const { userName } = req.body
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+// get userData based on the input fileld
+const getUserDataBasedOnSearch = async(req,res)=>{
+    try {
+        const {query} = req.query
+
+        const regexPattern = new RegExp(`^${query}`,'i');
+
+        const userData = await Users.find({userName:{$regex:regexPattern}})
+
+
+        res.json(userData);
+
+    } catch (error) {
+        console.error('error fetching userData',error)
+        res.status(500).json({error:'Internal server error'})
+    }
+}
+
+const getAllUsers = async (req,res)=>{
+
+    try { 
+
+        const allUsers = await Users.find()
+        res.json(allUsers)
+
+    } catch (error) {
+
+        console.log(error)
+    }
+}
 
 export {
     authUser,
@@ -223,6 +251,9 @@ export {
     updateUserProfile,
     uploadFile,
     fetchUserData,
-    resetPassword   
+    resetPassword,
+    updateUserData,
+    getUserDataBasedOnSearch,
+    getAllUsers
 
 }

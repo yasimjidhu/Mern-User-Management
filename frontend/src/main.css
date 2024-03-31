@@ -1,4 +1,4 @@
-body{
+body {
   background-color: white;
 }
 
@@ -132,4 +132,7 @@ button {
   border-radius: 5px;
   cursor: pointer;
   background-color: #167d7f;
+}
+.sidebar {
+  margin-top: 64px;
 }

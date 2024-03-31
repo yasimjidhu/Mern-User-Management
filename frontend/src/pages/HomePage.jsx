@@ -5,12 +5,16 @@ import { uploadFile } from "../slices/UploadSlice";
 import { fetchUserProfileData } from "../slices/UserData";
 import { BiEdit } from "react-icons/bi";
 import ResetPasswordModal from "../components/user/ResetPasswordModal";
+import { updateUserOnBackend } from "../slices/ResetUserData";
 
 const HomePage = () => {
   const [file, setFile] = useState(null);
   const [showUploadButton, setShowUploadButton] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+  const [isUserNameEditing, setIsUserNameEditing] = useState(false);
+  const [isEmailEditing, setIsEmailEditing] = useState(false);
+  const [editedUserName, setEditedUserName] = useState("");
+  const [editedEmail, setEditedEmail] = useState("");
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -49,12 +53,29 @@ const HomePage = () => {
     handleUpload();
   };
 
-
   const { userProfile, loading, error } = useSelector(
     (state) => state.userProfile
   );
 
+  const handleEditUserName = () => {
+    setIsUserNameEditing(true);
+    setEditedUserName(userProfile ? userProfile.userName : "");
+  };
 
+  const handleEditEmail = () => {
+    setIsEmailEditing(true);
+    setEditedEmail(userProfile ? userProfile.email : "");
+  };
+
+  const handleSaveUserName = () => {
+    setIsUserNameEditing(false);
+    dispatch(updateUserOnBackend({userName:editedUserName}))
+  };
+
+  const handleSaveEmail = () => {
+    setIsEmailEditing(false);
+    dispatch(updateUserOnBackend({email:editedEmail}))
+  };
   return (
     <>
       <Header />
@@ -103,7 +124,6 @@ const HomePage = () => {
                 </button>
               )}
               <label
-
                 className="block text-center bg-black rounded-md py-2 mt-3 text-teal-500 cursor-pointer mb-4 font-bold"
                 onClick={handleOpenModal}
               >
@@ -115,16 +135,54 @@ const HomePage = () => {
           <div className="w-2/3 mx-auto mb-4">
             <div className="rounded-lg shadow-md w-full mb-7 mt-8">
               <div className="bg-black w-full p-2 rounded-lg mb-3 relative">
-                <h2 className="text-white text-base ">
-                  {userProfile ? userProfile.userName : "userName"}
-                  <BiEdit className="absolute right-5 top-3 text-xl" />
-                </h2>
+                {isUserNameEditing ? (
+                  <input
+                    type="text"
+                    onChange={(e) => setEditedUserName(e.target.value)}
+                    className="text-black p-1 text-base font-bold w-full m-0 rounded-sm outline-none"
+                  />
+                ) : (
+                  <h2 className="text-white text-base ">
+                    {userProfile ? userProfile.userName : "userName"}
+                    <BiEdit
+                      className="absolute right-5 top-3 text-xl cursor-pointer"
+                      onClick={handleEditUserName}
+                    />
+                  </h2>
+                )}
+                {isUserNameEditing && (
+                  <button
+                    onClick={handleSaveUserName}
+                    className="absolute right-5 top-3 text-white text-base outline-none bg-violet-800 px-2 rounded-md"
+                  >
+                    Save
+                  </button>
+                )}
               </div>
               <div className="bg-black w-full p-2 rounded-lg relative">
-                <h2 className="text-white text-base">
-                  {userProfile ? userProfile.email : "email"}{" "}
-                  <BiEdit className="absolute right-5 top-3 text-xl" />
-                </h2>
+                {isEmailEditing ? (
+                  <input
+                    type="text"
+                    onChange={(e) => setEditedEmail(e.target.value)}
+                    className="text-black text-base font-bold w-full p-1 outline-none"
+                  />
+                ) : (
+                  <h2 className="text-white text-base">
+                    {userProfile ? userProfile.email : "email"}{" "}
+                    <BiEdit
+                      className="absolute right-5 top-3 text-xl cursor-pointer"
+                      onClick={handleEditEmail}
+                    />
+                  </h2>
+                )}
+                {isEmailEditing && (
+                  <button
+                    onClick={handleSaveEmail}
+                    className="absolute right-5 top-3 text-white text-base outline-none bg-violet-800 px-2 rounded-md"
+                  >
+                    Save
+                  </button>
+                )}
               </div>
             </div>
           </div>

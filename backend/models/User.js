@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
     },
     profile: {
         type: String,
-        default: "null.jpg"
+        default: null
     }
 });
 

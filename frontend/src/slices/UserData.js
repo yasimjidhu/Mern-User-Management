@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import baseUrl from "../Redux/constants/constants";
 
 // function to fetch the user profile
 export const fetchUserProfileData = createAsyncThunk(
@@ -44,4 +45,54 @@ const userProfileSlice = createSlice({
     }
 })
 
-export default userProfileSlice.reducer;
+
+
+// function to fetch the user data based on the search input 
+export const fetchUserData  = createAsyncThunk(
+  'userData/fetchUserData',
+  async(searchQuery,{rejectWithValue})=>{
+    try {
+      console.log('search query in slce',searchQuery)
+      const response = await axios.get(`/api/users/search?query=${searchQuery}`)
+      return response.data
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
+const initialUserDataState = {
+  userData:null,
+  loading:false,
+  error:null
+}
+
+
+const userDataSlice = createSlice({
+  name:'userData',
+  initialState:initialUserDataState,
+  reducers:{},
+  extraReducers:(builder)=>{
+    builder
+    .addCase(fetchUserData.pending,(state)=>{
+      state.loading = true,
+      state.error = null
+    })
+    .addCase(fetchUserData.fulfilled,(state,action)=>{
+      state.loading = false,
+      state.userData = action.payload
+    })
+    .addCase(fetchUserData.rejected,(state,action)=>{
+      state.error = action.payload,
+      state.loading = false
+    })
+  }
+})
+
+
+
+
+
+
+
+export {userDataSlice,userProfileSlice} 
