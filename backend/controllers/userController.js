@@ -161,9 +161,10 @@ const uploadFile = async (req, res) => {
 
         userExist.profile = file.originalname
 
-        await userExist.save()
+        const updatedProfile  = await userExist.save()
+        // console.log('updatedprofile',updatedProfile)
 
-        res.status(200).json({ message: 'file uploaded successfully', userExist })
+        res.status(200).json({ message: 'file uploaded successfully', updatedProfile })
 
     } catch (error) {
         console.log('error occured', error)

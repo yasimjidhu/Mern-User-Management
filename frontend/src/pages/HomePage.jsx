@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../components/common/Header";
 import { useDispatch, useSelector } from "react-redux";
-import { uploadFile } from "../slices/UploadSlice";
-import { fetchUserProfileData } from "../slices/UserData";
+import { fetchUserProfileData, uploadFile } from "../slices/UserData";
 import { BiEdit } from "react-icons/bi";
 import ResetPasswordModal from "../components/user/ResetPasswordModal";
 import { updateUserOnBackend } from "../slices/ResetUserData";
@@ -15,15 +14,15 @@ const HomePage = () => {
   const [isEmailEditing, setIsEmailEditing] = useState(false);
   const [editedUserName, setEditedUserName] = useState("");
   const [editedEmail, setEditedEmail] = useState("");
-  
-  const dispatch = useDispatch();
-  
-  const { userData, loading, error } = useSelector((state) => state.userData);
-  console.log('user data from store',userData?userData:"")
 
-  useEffect(()=>{
-    dispatch(fetchUserProfileData())
-  },[])
+  const dispatch = useDispatch();
+
+  const { userData, loading, error } = useSelector((state) => state?.userData);
+  console.log("user data from store", userData ? userData : "");
+
+  useEffect(() => {
+    dispatch(fetchUserProfileData());
+  }, [dispatch]);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -34,8 +33,6 @@ const HomePage = () => {
   };
 
   const baseUrl = "http://localhost:5000";
-
-  
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
@@ -55,8 +52,6 @@ const HomePage = () => {
     handleUpload();
   };
 
-
-
   const handleEditUserName = () => {
     setIsUserNameEditing(true);
     setEditedUserName(userData ? userData.userName : "");
@@ -69,12 +64,12 @@ const HomePage = () => {
 
   const handleSaveUserName = () => {
     setIsUserNameEditing(false);
-    dispatch(updateUserOnBackend({userName:editedUserName}))
+    dispatch(updateUserOnBackend({ userName: editedUserName }));
   };
 
   const handleSaveEmail = () => {
     setIsEmailEditing(false);
-    dispatch(updateUserOnBackend({email:editedEmail}))
+    dispatch(updateUserOnBackend({ email: editedEmail }));
   };
   return (
     <>

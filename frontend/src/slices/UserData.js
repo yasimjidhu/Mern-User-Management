@@ -92,6 +92,28 @@ export const fetchUserProfileData = createAsyncThunk(
 
 
 
+// define asyncthunk
+export const uploadFile = createAsyncThunk(
+  'userData/upload',
+  async (file, { rejectWithValue }) => {
+      try {
+          const formData = new FormData()
+          formData.append('profileImage', file)
+
+          const response = await axios.post(`/api/users/upload`, formData, {
+              headers: {
+                  'Content-Type': 'multipart/form-data'
+              }
+          })
+          return response.data
+      } catch (error) {
+          console.log(error)
+          return rejectWithValue(error.message)
+      }
+  }
+)
+
+
 
 const initialUserDataState = {
   userData: null,
@@ -177,6 +199,18 @@ const userDataSlice = createSlice({
         state.userData = action.payload
       })
       .addCase(fetchUserProfileData.rejected,(state,action)=>{
+        state.loading = false
+        state.error = action.payload
+      })
+      .addCase(uploadFile.pending,(state)=>{
+        state.loading = true
+        state.error = null
+      })
+      .addCase(uploadFile.fulfilled,(state,action)=>{
+        state.loading = false
+        state.userData = action.payload.updatedProfile
+      })
+      .addCase(uploadFile.rejected,(state,action)=>{
         state.loading = false
         state.error = action.payload
       })
