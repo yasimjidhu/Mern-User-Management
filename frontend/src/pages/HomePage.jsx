@@ -15,6 +15,15 @@ const HomePage = () => {
   const [isEmailEditing, setIsEmailEditing] = useState(false);
   const [editedUserName, setEditedUserName] = useState("");
   const [editedEmail, setEditedEmail] = useState("");
+  
+  const dispatch = useDispatch();
+  
+  const { userData, loading, error } = useSelector((state) => state.userData);
+  console.log('user data from store',userData?userData:"")
+
+  useEffect(()=>{
+    dispatch(fetchUserProfileData())
+  },[])
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -24,16 +33,9 @@ const HomePage = () => {
     setIsModalOpen(false);
   };
 
-  const dispatch = useDispatch();
   const baseUrl = "http://localhost:5000";
 
-  const userProfileDataFetcher = useMemo(() => {
-    return () => dispatch(fetchUserProfileData());
-  }, [dispatch]);
-
-  useEffect(() => {
-    userProfileDataFetcher();
-  }, [userProfileDataFetcher]);
+  
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
@@ -53,18 +55,16 @@ const HomePage = () => {
     handleUpload();
   };
 
-  const { userProfile, loading, error } = useSelector(
-    (state) => state.userProfile
-  );
+
 
   const handleEditUserName = () => {
     setIsUserNameEditing(true);
-    setEditedUserName(userProfile ? userProfile.userName : "");
+    setEditedUserName(userData ? userData.userName : "");
   };
 
   const handleEditEmail = () => {
     setIsEmailEditing(true);
-    setEditedEmail(userProfile ? userProfile.email : "");
+    setEditedEmail(userData ? userData.email : "");
   };
 
   const handleSaveUserName = () => {
@@ -89,14 +89,14 @@ const HomePage = () => {
           <form onSubmit={handleSubmit}>
             <div className="w-2/3 mx-auto">
               <div className="bg-gray-300 w-48 h-48 rounded-full mx-auto mt-3 shadow-2xl border-0 border-black">
-                {userProfile && userProfile.profile && (
+                {userData && userData.profile && (
                   <img
                     className="object-cover object-center w-full h-full rounded-full"
-                    src={`${baseUrl}/${userProfile.profile}`}
+                    src={`${baseUrl}/${userData.profile}`}
                     alt="User Profile"
                   />
                 )}
-                {!userProfile && (
+                {!userData && (
                   <div className="text-center text-gray-500">Loading...</div>
                 )}
               </div>
@@ -143,7 +143,7 @@ const HomePage = () => {
                   />
                 ) : (
                   <h2 className="text-white text-base ">
-                    {userProfile ? userProfile.userName : "userName"}
+                    {userData ? userData.userName : "userName"}
                     <BiEdit
                       className="absolute right-5 top-3 text-xl cursor-pointer"
                       onClick={handleEditUserName}
@@ -168,7 +168,7 @@ const HomePage = () => {
                   />
                 ) : (
                   <h2 className="text-white text-base">
-                    {userProfile ? userProfile.email : "email"}{" "}
+                    {userData ? userData.email : "email"}{" "}
                     <BiEdit
                       className="absolute right-5 top-3 text-xl cursor-pointer"
                       onClick={handleEditEmail}

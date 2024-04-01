@@ -39,9 +39,18 @@ const LoginPage = () => {
 
     dispatch(loginUser(formData))
       .then((res) => {
-        console.log("this is the response", res);
-        if (res.payload.email) {
-          navigate("/");
+        console.log('this is the frontend login res',res)
+        const {role} = res.payload
+        if (res.payload.user.email) {
+          
+          //check the user's role
+          if(role === 'admin'){
+            navigate('/adminHome')
+
+          }else{
+            // redirect user to the user dashboard
+            navigate("/");
+          }
         } else {
           toast.error(
             res.payload.error

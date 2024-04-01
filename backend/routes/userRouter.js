@@ -27,5 +27,5 @@ router.route('/profile').get(protect, getUserProfile).put(protect, updateUserPro
 router.post('/resetPassword', resetPassword)
 router.post('/updateUserData',updateUserData)
 router.get('/search',getUserDataBasedOnSearch)
-router.get('/getAllUsers',getAllUsers)
+// router.get('/getAllUsers',getAllUsers)
 export default router

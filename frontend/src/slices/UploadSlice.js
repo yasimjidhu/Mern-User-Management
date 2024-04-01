@@ -3,7 +3,7 @@ import axios from "axios";
 
 // define asyncthunk
 export const uploadFile = createAsyncThunk(
-    'upload/upload',
+    'userData/upload',
     async (file, { rejectWithValue }) => {
         try {
             const formData = new FormData()

@@ -8,29 +8,40 @@ import bcrypt from 'bcryptjs'
 
 
 const authUser = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
 
-    const { email, password } = req.body
+    try {
+        const user = await Users.findOne({ email: email });
 
-    const user = await Users.findOne({ email: email })
+        if (user && (await user.matchPasswords(password))) {
 
-    if (user && (await user.matchPasswords(password))) {
-        generateToken(res, user._id)
-        res.status(201).json(user);
-    } else {
-        return res.status(401).json({ error: 'invalid email or password' })
+            const { _id, role } = user;
+
+            // Generate token with user ID and role
+            generateToken(res, _id, role);
+
+            res.status(201).json({ user, role });
+        } else {
+            res.status(401).json({ error: 'Invalid email or password' });
+        }
+    } catch (error) {
+        console.error('Error authenticating user:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
+});
 
-})
 
 
 const registerUser = asyncHandler(async (req, res) => {
-    const { userName, email, password } = req.body
+    const { userName, email, password } = req.body;
 
-    const userExist = await Users.findOne({ email: email })
+    // Check if the user already exists
+    const userExist = await Users.findOne({ email: email });
     if (userExist) {
-        return res.status(400).json({ error: 'user already exist' })
+        return res.status(400).json({ error: 'User already exists' });
     }
 
+    // Create a new user with default role 'user'
     const newUser = await Users.create({
         userName,
         email,
@@ -39,13 +50,15 @@ const registerUser = asyncHandler(async (req, res) => {
     });
 
     if (newUser) {
-        generateToken(res, newUser._id)
+        // Generate token with user's ID and role
+        generateToken(res, newUser._id, newUser.role);
         res.status(201).json(newUser);
     } else {
-        res.status(400)
-        throw new Error('invalid user data')
+        res.status(400);
+        throw new Error('Invalid user data');
     }
-})
+});
+
 
 const fetchUserData = async (req, res) => {
     try {
@@ -66,11 +79,12 @@ const fetchUserData = async (req, res) => {
             return res.status(404).json({ error: 'user not found' })
         }
 
+        console.log('user profile sent')
         res.json(user)
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({ error: 'internal server error' })
+        res.status(500).json(error)
     }
 }
 
@@ -128,6 +142,10 @@ const uploadFile = async (req, res) => {
     try {
         const token = req.headers.cookie.split('=')[1]
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+        if (!decodedToken) {
+            return res.status(401).json({ error: 'unAuthorized' })
+        }
         const userId = decodedToken.userId;
         const file = req.file
 
@@ -213,26 +231,26 @@ const updateUserData = async (req, res) => {
 }
 
 // get userData based on the input fileld
-const getUserDataBasedOnSearch = async(req,res)=>{
+const getUserDataBasedOnSearch = async (req, res) => {
     try {
-        const {query} = req.query
+        const { query } = req.query
 
-        const regexPattern = new RegExp(`^${query}`,'i');
+        const regexPattern = new RegExp(`^${query}`, 'i');
 
-        const userData = await Users.find({userName:{$regex:regexPattern}})
+        const userData = await Users.find({ userName: { $regex: regexPattern } })
 
 
         res.json(userData);
 
     } catch (error) {
-        console.error('error fetching userData',error)
-        res.status(500).json({error:'Internal server error'})
+        console.error('error fetching userData', error)
+        res.status(500).json({ error: 'Internal server error' })
     }
 }
 
-const getAllUsers = async (req,res)=>{
+const getAllUsers = async (req, res) => {
 
-    try { 
+    try {
 
         const allUsers = await Users.find()
         res.json(allUsers)

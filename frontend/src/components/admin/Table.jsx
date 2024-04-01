@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUserData } from "../../slices/UserData";
+import { deleteUser, fetchAllUsersData, fetchUserData } from "../../slices/UserData";
 import useGetReqHook from "../../hooks/useGetReqHook";
 import baseUrl from "../../Redux/constants/constants";
 import Modal from "./Modal";
@@ -8,31 +8,34 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import handleDeleteUser from "./alert";
 
+
+
 const Table = () => {
+
   const [searchQuery, setSearchQuery] = useState("");
   const [allUsersData, setAllUsersData] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [deletionLoading, setDeletionLoading] = useState(false);
+  const [editedUserData,setEditedUserData] = useState([])
+  const [editName,setEditName] = useState({
+    userName:"",
+    userId:"",
+  });
 
   const searchedUser = useSelector((state) => state.userData);
   const { loading, error, getRequest } = useGetReqHook();
+  const fullUsersdata = useSelector((state)=>state?.userData?.userData)
 
-  const fetchAllUsersData = async () => {
-    try {
-      const data = await getRequest("/api/users/getAllUsers");
-      setAllUsersData(data);
-    } catch (error) {
-      console.error("error fetching data", error);
-    }
-  };
-  
-  useEffect(() => {
-    fetchAllUsersData();
-  }, []);
-  
 
+  
+  
   const dispatch = useDispatch();
+
+
+  useEffect(()=>{
+    dispatch(fetchAllUsersData())
+  },[dispatch])
 
   const handleSearchInputChange = (e) => {
     const query = e.target.value;
@@ -40,47 +43,72 @@ const Table = () => {
     dispatch(fetchUserData(query));
   };
 
+
+
   const handleEditClick = (user) => {
     setSelectedUser(user);
     setShowModal(true);
   };
+
+  // edit user data
+  // const handleEditUserName = async(e)=>{
+  //   try {
+  //       const {userId} = editName
+  //       const value = e.target.value
+
+  //       setEditName((prevEditName)=>({
+  //           ...prevEditName,
+  //           value:value
+  //       }))
+
+  //   } catch (error) {
+  //       console.error('error updating user name',error)
+  //       toast.error('failed to update the user name')
+  //   }
+  // }
+
+
 
   const handleDeleteButtonClick = async(userId) => {
     const isConfirmed = await handleDeleteUser()
     console.log('isconfirmed',isConfirmed)
     
     if(isConfirmed){
-        deleteUserData(userId)
+        dispatch(deleteUser(userId)) 
     }
   };
+
+
 
   // function to delete the user
-  const deleteUserData = async (userId) => {
-    console.log("deletion function called in frontend");
-    setDeletionLoading(true);
-    try {
-      const response = await axios.delete(`/api/admin/delete-user/${userId}`);
+  // const deleteUserData = async (userId) => {
+  //   console.log("deletion function called in frontend");
+  //   setDeletionLoading(true);
+  //   try {
+  //     const response = await axios.delete(`/api/admin/delete-user/${userId}`);
 
-      if (response.status === 200) {
-        setDeletionLoading(false);
-        fetchAllUsersData()
-        //   closeModal()
-        toast.success("User deleted successfully");
-      } else {
-        toast.error("failed to delete the user");
-        console.log("failed to delete the user");
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(error);
-    }
-  };
+  //     if (response.status === 200) {
+  //       setDeletionLoading(false);
+  //       fetchAllUsersData()
+  //       //   closeModal()
+  //       toast.success("User deleted successfully");
+  //     } else {
+  //       toast.error("failed to delete the user");
+  //       console.log("failed to delete the user");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     toast.error(error);
+  //   }
+  // };
+
+
 
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
       {showModal && (
         <div className="fixed flex items-center w-[1000px] justify-center  bg-opacity-20 z-50">
-          <Modal
+          <Modal 
             className="m-auto"
             user={selectedUser}
             closeModal={() => setShowModal(false)}
@@ -181,8 +209,8 @@ const Table = () => {
                   </td>
                 </tr>
               ))
-            ) : allUsersData?.length > 0 ? (
-              allUsersData.map((user, index) => (
+            ) : fullUsersdata?.length > 0 ? (
+              fullUsersdata.map((user, index) => (
                 <tr
                   key={index}
                   className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-900 dark:hover:bg-gray-900"

@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 const jwtTokenDecoder = (token)=>{
      //verify the token
      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+     console.log('toke in verification',decoded)
 
      if (!decoded) {
          return {error:'to token found'}

@@ -1,11 +1,61 @@
-import React, { useState } from "react";
-import baseUrl from "../../Redux/constants/constants";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { editUserName } from "../../slices/PasswordResetSlice";
 
 const Modal = ({ user, closeModal }) => {
+  
+   const unchangedUserName = user.userName;
+   const [editedUser,setEditedUser] = useState(user)
+   const [success,setSuccess] = useState(false)
 
+   const dispatch = useDispatch()
+
+   const handleInputChange = (e)=>{
+    const {name,value} = e.target
+    setEditedUser((prevUser)=>({
+        ...prevUser,
+        [name]:value,
+    }))
+   }
+
+   const validateForm =()=>{
+    if(!editedUser.userName){
+      toast.error('please fill the field')
+      return false
+    }
+    if(unchangedUserName === editedUser.userName){
+      toast.warning('make any changes to continue')
+      return false
+    }
+    return true
+   }
+
+   const handleSubmit = async (e)=>{
+    e.preventDefault()
+    if(!validateForm()){
+      return
+    }
    
+    dispatch(editUserName(editedUser))
+    .then((res)=>{
+      closeModal()
+      setSuccess(true)
+      console.log('this is the modal edited data after success',res)
+    })
+    .catch((error)=>{
+      console.log('error updating user',error)
+      toast.error('failed to update the user')
+    })
+   }
+
+   useEffect(()=>{
+    if(success){
+      console.log('use effect called')
+    }
+   },[success])
+
   return (
     <>
       <div className="relative p-4 w-full max-w-md max-h-full">
@@ -38,7 +88,7 @@ const Modal = ({ user, closeModal }) => {
             </button>
           </div>
           <div className="p-4 md:p-5">
-            <form className="space-y-4" action="#">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label
                   htmlFor="email"
@@ -53,7 +103,8 @@ const Modal = ({ user, closeModal }) => {
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                   placeholder=""
                   required=""
-                  value={user?.userName}
+                  value={editedUser.userName}
+                  onChange={handleInputChange}
                 />
               </div>
               <div>
@@ -70,7 +121,8 @@ const Modal = ({ user, closeModal }) => {
                   placeholder="••••••••"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                   required=""
-                  value={user.email}
+                  value={editedUser.email}
+                  readOnly
                 />
               </div>
               <div className="flex justify-between">

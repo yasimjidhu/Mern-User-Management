@@ -4,7 +4,7 @@ import { apiSlice } from '../slices/ApiSlice';
 import UploadSlice from '../slices/UploadSlice';
 import PasswordResetSlice from '../slices/PasswordResetSlice';
 import userReducer from '../slices/ResetUserData'
-import { userDataSlice,userProfileSlice } from '../slices/UserData';
+import  userDataSlice from '../slices/UserData';
 
 const store = configureStore({
     reducer:{
