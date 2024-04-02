@@ -39,7 +39,6 @@ const LoginPage = () => {
 
     dispatch(loginUser(formData))
       .then((res) => {
-        console.log('this is the frontend login res',res)
         const {role} = res.payload
         if (res.payload.user.email) {
           

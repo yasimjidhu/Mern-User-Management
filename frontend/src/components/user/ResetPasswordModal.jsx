@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { resetPassword } from "../../slices/PasswordResetSlice";
+// import { resetPassword } from "../../slices/PasswordResetSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { resetPassword } from "../../slices/UserData";
 
 const ResetPasswordModal = ({ isOpen, onClose, onSubmit }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { loading, error, success } = useSelector(
     (state) => state.resetPassword
   );
@@ -22,17 +23,16 @@ const ResetPasswordModal = ({ isOpen, onClose, onSubmit }) => {
     if (formData.newPassword !== formData.confirmPassword) {
       return;
     }
-    if(formData.currentPassword === formData.newPassword){
-      toast.error('new password must be defferent from current password')
-      return 
+    if (formData.currentPassword === formData.newPassword) {
+      toast.error("new password must be defferent from current password");
+      return;
     }
 
     try {
       const res = await dispatch(resetPassword(formData));
       onClose();
       toast.success("Password reset successfully");
-      navigate('/login')
-
+      navigate("/login");
     } catch (err) {
       toast.error("Failed to reset password", err);
     }

@@ -79,7 +79,6 @@ const fetchUserData = async (req, res) => {
             return res.status(404).json({ error: 'user not found' })
         }
 
-        console.log('user profile sent')
         res.json(user)
 
     } catch (error) {
@@ -112,28 +111,26 @@ const getUserProfile = asyncHandler(async (req, res) => {
 
 
 const updateUserProfile = asyncHandler(async (req, res) => {
-    const user = await Users.findById(req.user._id)
+
+    const {userId,key,value} = req.body
+
+    const user = await Users.findById(userId)
 
     if (user) {
-        user.userName = req.body.userName || user.userName
-        user.email = req.body.email || user.email
-
-        if (req.body.password) {
-            user.password = req.body.password
+        if(key=='userName'){
+            user.userName = value|| user.userName
+        }else if(key=='email'){
+            user.email = value || user.email
         }
 
         const updatedUser = await user.save()
+        console.log('updated user backend',updatedUser)
 
-        res.status(200).json({
-            _id: updatedUser._id,
-            userName: updatedUser.userName,
-            email: updatedUser.email
-        })
+        return res.status(200).json(updatedUser)
     } else {
         res.status(404)
         throw new Error('User not found')
     }
-    res.status(200).json({ message: 'update user profile' })
 })
 
 
@@ -208,12 +205,13 @@ const resetPassword = async (req, res) => {
         const hashedPassword = await bcrypt.hash(newPassword, salt);
 
         // Update the user's password in the database
-        await Users.findOneAndUpdate(
+        const updatedUser = await Users.findOneAndUpdate(
             { _id: userId },
             { $set: { password: hashedPassword } }
         );
 
-        return res.status(200).json({ message: 'Password reset successfully' });
+        console.log('updated user yasim bro',updatedUser)
+        return res.status(200).json({ message: 'Password reset successfully',updatedUser });
     } catch (error) {
         console.error(error.message);
         return res.status(500).json({ error: 'Internal server error' });

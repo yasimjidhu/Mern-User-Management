@@ -1,7 +1,6 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
   "type": "module",
   "main": "config.js",
   "scripts": {
@@ -27,5 +26,6 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
-  }
+  },
+  "description": ""
 }

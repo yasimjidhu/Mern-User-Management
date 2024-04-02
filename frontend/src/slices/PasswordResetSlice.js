@@ -2,19 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 // import baseUrl from "../Redux/constants/constants";
 
-// async action to reset the password
-export const resetPassword = createAsyncThunk(
-    'editUser/resetPassword',
-    async (formData, { rejectWithValue }) => {
-        try {
 
-            const response = await axios.post('/api/users/resetPassword', formData)
-            return response.data
-        } catch (error) {
-            return rejectWithValue(error.response.data)
-        }
-    }
-)
 
 const initialState = {
     loading: false,
@@ -29,21 +17,7 @@ const passwordResetSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(resetPassword.pending, (state) => {
-                state.loading = true,
-                state.error = null
-                state.success = false
-            })
-            .addCase(resetPassword.fulfilled, (state) => {
-                state.loading = false,
-                state.success = true,
-                state.error = null
-            })
-            .addCase(resetPassword.rejected, (state, action) => {
-                state.loading = false,
-                state.error = action.payload,
-                state.success = false
-            })
+            
             .addCase(editUserName.pending,(state)=>{
                 state.loading = true,
                 state.error = false,

@@ -1,5 +1,39 @@
 import Users from "../models/User.js";
 import jwt from 'jsonwebtoken'
+import generateToken from "../utils/generateToken.js";
+
+
+
+// add user
+const addUser = async (req,res)=>{
+
+    const {userName,email,password} = req.body
+ 
+    // check if the user already exist
+    const userExist = await Users.findOne({email:email})
+
+    if(userExist){
+        return res.status(400).json({error:'user already exists'})
+    }
+
+    // create a new user with the data
+    const newUser = await Users.create({
+        userName,
+        email,
+        password,
+        role: 'user'
+    })
+
+    if(newUser){
+        const token = generateToken(res,newUser._id,newUser.role)
+        console.log('admin added a user',newUser)
+        return res.status(201).json({user:newUser,token})
+    }else{
+        res.status(400)
+        throw new Error('Invalid user data')
+    }
+
+}
 
 
 // edit the user
@@ -76,6 +110,7 @@ const getAllUsers = async (req,res)=>{
 
 
 export {
+    addUser,
     deleteUser,
     updateUser,
     adminLogout,

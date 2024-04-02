@@ -96,24 +96,65 @@ export const fetchUserProfileData = createAsyncThunk(
 export const uploadFile = createAsyncThunk(
   'userData/upload',
   async (file, { rejectWithValue }) => {
-      try {
-          const formData = new FormData()
-          formData.append('profileImage', file)
+    try {
+      const formData = new FormData()
+      formData.append('profileImage', file)
 
-          const response = await axios.post(`/api/users/upload`, formData, {
-              headers: {
-                  'Content-Type': 'multipart/form-data'
-              }
-          })
-          return response.data
-      } catch (error) {
-          console.log(error)
-          return rejectWithValue(error.message)
-      }
+      const response = await axios.post(`/api/users/upload`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      return response.data
+    } catch (error) {
+      console.log(error)
+      return rejectWithValue(error.message)
+    }
   }
 )
 
+// async action to reset the password
+export const resetPassword = createAsyncThunk(
+  'userData/resetPassword',
+  async (formData, { rejectWithValue }) => {
+    try {
 
+      const response = await axios.post('/api/users/resetPassword', formData)
+      return response.data
+    } catch (error) {
+      return rejectWithValue(error.response.data)
+    }
+  }
+)
+
+// function to save the userData
+export const updateUserData = createAsyncThunk(
+  'userData/updateUserData',
+  async (data, { rejectWithValue }) => {
+    try {
+      console.log('data in slice', data)
+      const response = await axios.put('/api/users/profile', data)
+      return response.data
+    } catch (error) {
+      return rejectWithValue(error)
+    }
+  }
+)
+
+// function to add a user (by admin)
+export const addUser = createAsyncThunk(
+  'userData/addUser',
+  async (formData, { rejectWithValue }) => {
+    try {
+      console.log('add user formdata', formData)
+      const response = await axios.post('/api/admin/addUser', formData)
+      return response.data
+
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
 
 const initialUserDataState = {
   userData: null,
@@ -190,27 +231,51 @@ const userDataSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(fetchUserProfileData.pending,(state)=>{
+      .addCase(fetchUserProfileData.pending, (state) => {
         state.loading = true
         state.error = null
       })
-      .addCase(fetchUserProfileData.fulfilled,(state,action)=>{
+      .addCase(fetchUserProfileData.fulfilled, (state, action) => {
         state.loading = false
         state.userData = action.payload
       })
-      .addCase(fetchUserProfileData.rejected,(state,action)=>{
+      .addCase(fetchUserProfileData.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload
       })
-      .addCase(uploadFile.pending,(state)=>{
+      .addCase(uploadFile.pending, (state) => {
         state.loading = true
         state.error = null
       })
-      .addCase(uploadFile.fulfilled,(state,action)=>{
+      .addCase(uploadFile.fulfilled, (state, action) => {
         state.loading = false
         state.userData = action.payload.updatedProfile
       })
-      .addCase(uploadFile.rejected,(state,action)=>{
+      .addCase(uploadFile.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
+      })
+      .addCase(resetPassword.pending, (state) => {
+        state.loading = true,
+          state.error = null
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.loading = false,
+          state.userData = action.payload.updatedUser
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
+      })
+      .addCase(addUser.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(addUser.fulfilled, (state, action) => {
+        state.loading = false
+        state.userData = action.payload
+      })
+      .addCase(addUser.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload
       })

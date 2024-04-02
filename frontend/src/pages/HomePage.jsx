@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/common/Header";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUserProfileData, uploadFile } from "../slices/UserData";
+import {
+  fetchUserProfileData,
+  updateUserData,
+  uploadFile,
+} from "../slices/UserData";
 import { BiEdit } from "react-icons/bi";
 import ResetPasswordModal from "../components/user/ResetPasswordModal";
-import { updateUserOnBackend } from "../slices/ResetUserData";
+// import { updateUserOnBackend } from "../slices/ResetUserData";
 
 const HomePage = () => {
   const [file, setFile] = useState(null);
@@ -18,7 +22,6 @@ const HomePage = () => {
   const dispatch = useDispatch();
 
   const { userData, loading, error } = useSelector((state) => state?.userData);
-  console.log("user data from store", userData ? userData : "");
 
   useEffect(() => {
     dispatch(fetchUserProfileData());
@@ -55,22 +58,29 @@ const HomePage = () => {
   const handleEditUserName = () => {
     setIsUserNameEditing(true);
     setEditedUserName(userData ? userData.userName : "");
+    setIsEmailEditing(false);
   };
 
   const handleEditEmail = () => {
     setIsEmailEditing(true);
     setEditedEmail(userData ? userData.email : "");
-  };
-
-  const handleSaveUserName = () => {
     setIsUserNameEditing(false);
-    dispatch(updateUserOnBackend({ userName: editedUserName }));
   };
 
-  const handleSaveEmail = () => {
-    setIsEmailEditing(false);
-    dispatch(updateUserOnBackend({ email: editedEmail }));
+  const handleSaveUserData = async () => {
+    setIsUserNameEditing(false);
+    setIsEmailEditing(false)
+    await dispatch(
+      updateUserData({
+        userId: userData._id,
+        key: editedUserName ? "userName" : "email",
+        value: editedUserName ? editedUserName : editedEmail,
+      })
+    );
+
+    dispatch(fetchUserProfileData());
   };
+
   return (
     <>
       <Header />
@@ -134,7 +144,7 @@ const HomePage = () => {
                   <input
                     type="text"
                     onChange={(e) => setEditedUserName(e.target.value)}
-                    className="text-black p-1 text-base font-bold w-full m-0 rounded-sm outline-none"
+                    className="text-black  text-base font-bold w-full m-0 rounded-sm outline-none p-1"
                   />
                 ) : (
                   <h2 className="text-white text-base ">
@@ -147,7 +157,7 @@ const HomePage = () => {
                 )}
                 {isUserNameEditing && (
                   <button
-                    onClick={handleSaveUserName}
+                    onClick={handleSaveUserData}
                     className="absolute right-5 top-3 text-white text-base outline-none bg-violet-800 px-2 rounded-md"
                   >
                     Save
@@ -164,20 +174,10 @@ const HomePage = () => {
                 ) : (
                   <h2 className="text-white text-base">
                     {userData ? userData.email : "email"}{" "}
-                    <BiEdit
-                      className="absolute right-5 top-3 text-xl cursor-pointer"
-                      onClick={handleEditEmail}
-                    />
+          
                   </h2>
                 )}
-                {isEmailEditing && (
-                  <button
-                    onClick={handleSaveEmail}
-                    className="absolute right-5 top-3 text-white text-base outline-none bg-violet-800 px-2 rounded-md"
-                  >
-                    Save
-                  </button>
-                )}
+          
               </div>
             </div>
           </div>
