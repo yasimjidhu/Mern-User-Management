@@ -146,7 +146,7 @@ export const addUser = createAsyncThunk(
   'userData/addUser',
   async (formData, { rejectWithValue }) => {
     try {
-      console.log('add user formdata', formData)
+
       const response = await axios.post('/api/admin/addUser', formData)
       return response.data
 
@@ -273,7 +273,7 @@ const userDataSlice = createSlice({
       })
       .addCase(addUser.fulfilled, (state, action) => {
         state.loading = false
-        state.userData = action.payload
+        state.userData = action.payload.user
       })
       .addCase(addUser.rejected, (state, action) => {
         state.loading = false

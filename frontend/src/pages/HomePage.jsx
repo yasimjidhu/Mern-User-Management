@@ -8,7 +8,6 @@ import {
 } from "../slices/UserData";
 import { BiEdit } from "react-icons/bi";
 import ResetPasswordModal from "../components/user/ResetPasswordModal";
-// import { updateUserOnBackend } from "../slices/ResetUserData";
 
 const HomePage = () => {
   const [file, setFile] = useState(null);
@@ -61,11 +60,6 @@ const HomePage = () => {
     setIsEmailEditing(false);
   };
 
-  const handleEditEmail = () => {
-    setIsEmailEditing(true);
-    setEditedEmail(userData ? userData.email : "");
-    setIsUserNameEditing(false);
-  };
 
   const handleSaveUserData = async () => {
     setIsUserNameEditing(false);
@@ -168,7 +162,7 @@ const HomePage = () => {
                 {isEmailEditing ? (
                   <input
                     type="text"
-                    onChange={(e) => setEditedEmail(e.target.value)}
+                    
                     className="text-black text-base font-bold w-full p-1 outline-none"
                   />
                 ) : (

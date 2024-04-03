@@ -27,7 +27,7 @@ const addUser = async (req,res)=>{
     if(newUser){
         const token = generateToken(res,newUser._id,newUser.role)
         console.log('admin added a user',newUser)
-        return res.status(201).json({user:newUser,token})
+        return res.status(201).json({userData:newUser,token})
     }else{
         res.status(400)
         throw new Error('Invalid user data')

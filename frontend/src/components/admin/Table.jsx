@@ -15,16 +15,17 @@ import AddUser from "./AddUser";
 
 const Table = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [allUsersData, setAllUsersData] = useState(null);
+  // const [allUsersData, setAllUsersData] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [deletionLoading, setDeletionLoading] = useState(false);
-  const [editedUserData, setEditedUserData] = useState([]);
+  // const [deletionLoading, setDeletionLoading] = useState(false);
+  // const [editedUserData, setEditedUserData] = useState([]);
   const [editName, setEditName] = useState({
     userName: "",
     userId: "",
   });
 
+  
   const searchedUser = useSelector((state) => state.userData);
   const { loading, error, getRequest } = useGetReqHook();
   const fullUsersdata = useSelector((state) => state?.userData?.userData);
@@ -49,7 +50,7 @@ const Table = () => {
 
   const handleDeleteButtonClick = async (userId) => {
     const isConfirmed = await handleDeleteUser();
-    console.log("isconfirmed", isConfirmed);
+
 
     if (isConfirmed) {
       dispatch(deleteUser(userId));

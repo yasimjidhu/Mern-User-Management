@@ -37,10 +37,14 @@ const AddUser = () => {
     }
 
     dispatch(addUser(formData))
-    .then((res)=>{
-      console.log('response data of add user',res)
-      fetchAllUsersData()
-    })
+      .then((res) => {
+        console.log("response data of add user", res);
+        dispatch(fetchAllUsersData());
+        setIsModalOpen(false);
+      })
+      .catch((err) => {
+        console.log("error adding user", err);
+      });
   };
   return (
     <>
