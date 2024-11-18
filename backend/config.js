@@ -13,12 +13,3 @@ useUnifiedTopology:true}).then(()=>{
 })
 
 export default db
-
-// const db = mongoose.connection
-
-// db.on('error',console.error.bind(console,'mogodb connection error'))
-// db.once('open',function(){
-//     console.log('mongodb connected')
-// })
-
-// export default db

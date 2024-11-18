@@ -3,12 +3,10 @@ import "/src/main.css";
 import Header from "../components/common/Header";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-// import { useLoginMutation } from "../slices/UsersApiSlice";
-// import { setCredentials } from "../slices/AuthSlice";
 import { toast } from "react-toastify";
 import { FaSpinner } from "react-icons/fa";
 import { loginUser } from "../slices/AuthSlice";
-import Swal from "sweetalert2";
+
 
 const LoginPage = () => {
   const dispatch = useDispatch();

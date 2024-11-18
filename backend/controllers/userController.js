@@ -1,7 +1,7 @@
 import Users from "../models/User.js"
 import asyncHandler from 'express-async-handler'
 import generateToken from "../utils/generateToken.js"
-import jwt from 'jsonwebtoken'
+import jwt, { decode } from 'jsonwebtoken'
 import jwtTokenDecoder from "../utils/decodeToken.js"
 import bcrypt from 'bcryptjs'
 
@@ -18,7 +18,8 @@ const authUser = asyncHandler(async (req, res) => {
             const { _id, role } = user;
 
             // Generate token with user ID and role
-            generateToken(res, _id, role);
+            const token = generateToken(res, _id, role);
+            console.log('generated token',token)
 
             res.status(201).json({ user, role });
         } else {
@@ -133,41 +134,45 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     }
 })
 
-
-
 const uploadFile = async (req, res) => {
     try {
-        const token = req.headers.cookie.split('=')[1]
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const token = req.cookies.jwt;  // Now using req.cookies instead of manually parsing headers
+        
+        console.log('Token is:', token);  // For debugging, inspect the token
 
-        if (!decodedToken) {
-            return res.status(401).json({ error: 'unAuthorized' })
+        if (!token) {
+            return res.status(401).json({ error: 'No token provided' });
         }
+
+        // Decode the token
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        console.log('Decoded token:', decodedToken);
+
         const userId = decodedToken.userId;
-        const file = req.file
+        const file = req.file;
 
         if (!file) {
-            return res.status(400).json({ message: 'No file uploaded' })
+            return res.status(400).json({ message: 'No file uploaded' });
         }
 
-        const userExist = await Users.findById(userId)
+        const userExist = await Users.findById(userId);
 
         if (!userExist) {
-            return res.status(401).json({ error: 'user not found' })
+            return res.status(401).json({ error: 'User not found' });
         }
 
-        userExist.profile = file.originalname
+        userExist.profile = file.originalname;
 
-        const updatedProfile  = await userExist.save()
-        // console.log('updatedprofile',updatedProfile)
+        const updatedProfile = await userExist.save();
 
-        res.status(200).json({ message: 'file uploaded successfully', updatedProfile })
+        res.status(200).json({ message: 'File uploaded successfully', updatedProfile });
 
     } catch (error) {
-        console.log('error occured', error)
-        res.status(500).json({ message: 'Internal server error' })
+        console.log('Error occurred:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
-}
+};
+
 
 const resetPassword = async (req, res) => {
     try {
